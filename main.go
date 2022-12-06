@@ -1,17 +1,55 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	"os"
+	"strconv"
 )
+
+type Config struct {
+	DataSourceName string `json:"dataSourceName"`
+	Port           int    `json:"port"`
+}
 
 func main() {
 	router := gin.Default()
 
+	var conf Config
+
+	byte, err := os.ReadFile("./configuration.json")
+	if err != nil {
+		fmt.Println("Error Read File:", err)
+		return
+	}
+
+	err = json.Unmarshal(byte, &conf)
+	if err != nil {
+		fmt.Println("Error Unmarshal:", err)
+		return
+	}
+
+	_, err = sqlx.Open("mysql", conf.DataSourceName)
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	port := ":" + strconv.Itoa(conf.Port)
+
 	router.GET("", Hand)
-	router.Run(":8080")
+
+	err = router.Run(port)
+	if err != nil {
+		panic(err)
+		return
+	}
 }
 
 func Hand(context *gin.Context) {
+	context.Writer.WriteString("Oke")
 	fmt.Println("Ok")
 }
