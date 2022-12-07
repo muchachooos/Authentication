@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Authorization/model"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -10,15 +11,10 @@ import (
 	"strconv"
 )
 
-type Config struct {
-	DataSourceName string `json:"dataSourceName"`
-	Port           int    `json:"port"`
-}
-
 func main() {
 	router := gin.Default()
 
-	var conf Config
+	var conf model.Config
 
 	byte, err := os.ReadFile("./configuration.json")
 	if err != nil {
