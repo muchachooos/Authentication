@@ -1,7 +1,9 @@
 package main
 
 import (
+	"Authorization/handler"
 	"Authorization/model"
+	"Authorization/storage"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -28,24 +30,31 @@ func main() {
 		return
 	}
 
-	_, err = sqlx.Open("mysql", conf.DataSourceName)
+	dataBase, err := sqlx.Open("mysql", conf.DataSourceName)
 	if err != nil {
 		panic(err)
 		return
 	}
 
-	port := ":" + strconv.Itoa(conf.Port)
+	if dataBase == nil {
+		fmt.Println("dB nil")
+		panic(err)
+		return
+	}
 
-	router.GET("", Hand)
+	server := handler.Server{
+		Storage: &storage.UserStorage{
+			DataBase: dataBase,
+		},
+	}
+
+	router.GET("", server.Hand)
+
+	port := ":" + strconv.Itoa(conf.Port)
 
 	err = router.Run(port)
 	if err != nil {
 		panic(err)
 		return
 	}
-}
-
-func Hand(context *gin.Context) {
-	context.Writer.WriteString("Oke")
-	fmt.Println("Ok")
 }
