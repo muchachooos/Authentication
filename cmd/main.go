@@ -13,6 +13,14 @@ import (
 	"strconv"
 )
 
+/*
+dataTime := time.Now()
+fmt.Println(dataTime.String())
+
+token := uuid.NewString() //String
+fmt.Println(token)
+*/
+
 func main() {
 	router := gin.Default()
 
@@ -37,8 +45,7 @@ func main() {
 	}
 
 	if dataBase == nil {
-		fmt.Println("dB nil")
-		panic(err)
+		panic("DB nil")
 		return
 	}
 
@@ -48,7 +55,7 @@ func main() {
 		},
 	}
 
-	router.GET("", server.Hand)
+	router.POST("/register_a_user", server.RegistrationHandler)
 
 	port := ":" + strconv.Itoa(conf.Port)
 
