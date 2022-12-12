@@ -7,6 +7,7 @@ CREATE TABLE `user`
     `time`     DATETIME
 );
 
+DROP TABLE `user`;
 SHOW DATABASES;
 USE auth_data;
 SHOW TABLES;
