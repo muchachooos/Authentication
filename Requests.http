@@ -2,4 +2,4 @@
 POST http://localhost:80/register_a_user?login=maxxx&password=123213123
 
 ### Запрос на авторизацию
-GET http://localhost:80/
+GET http://localhost:80/authorization?login=maxxx&password=123213123
