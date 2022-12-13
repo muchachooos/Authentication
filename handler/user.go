@@ -107,6 +107,13 @@ func (s *Server) CheckTokenHandler(context *gin.Context) {
 		return
 	}
 
+	jsonInByte, err := json.Marshal(resultTable)
+	if err != nil {
+		context.Status(http.StatusInternalServerError)
+		context.Writer.WriteString("json creating error")
+		return
+	}
+
 	context.Status(http.StatusOK)
-	context.Writer.WriteString("Welcome to the club Body")
+	context.Writer.Write(jsonInByte)
 }
