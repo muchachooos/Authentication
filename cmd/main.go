@@ -13,14 +13,6 @@ import (
 	"strconv"
 )
 
-/*
-dataTime := time.Now()
-fmt.Println(dataTime.String())
-
-token := uuid.NewString() //String
-fmt.Println(token)
-*/
-
 func main() {
 	router := gin.Default()
 
