@@ -39,16 +39,16 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) ([]model.Data, boo
 	}
 
 	if len(resultTable) == 0 {
-		return nil, false, err
+		return nil, false, nil
 	}
 
 	countOfChangedRows, err := res.RowsAffected()
 	if err != nil {
-		return nil, false, err
+		return nil, false, nil
 	}
 
 	if countOfChangedRows == 0 {
-		return nil, false, err
+		return nil, false, nil
 	}
 
 	return resultTable, true, nil
@@ -58,19 +58,19 @@ func (u *UserStorage) CheckTokenInDB(token string) ([]model.Data, bool, error) {
 
 	var resultTable []model.Data
 
-	err := u.DataBase.Select(&resultTable, "SELECT * FROM user WHERE `token` = ?", token)
+	err := u.DataBase.Select(&resultTable, "SELECT `id`, `login`, `token`, `time` FROM user WHERE `token` = ?", token)
 	if err != nil {
 		return nil, false, err
 	}
 
 	if len(resultTable) == 0 {
-		return nil, false, err
+		return nil, false, nil
 	}
 
 	data := resultTable[0]
 
-	if time.Since(data.Time) > 15*time.Second {
-		return nil, false, err
+	if time.Since(data.Time) > 15*time.Minute {
+		return nil, false, nil
 	}
 
 	return resultTable, true, nil
