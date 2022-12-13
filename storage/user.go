@@ -54,24 +54,28 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) ([]model.Data, boo
 	return resultTable, true, nil
 }
 
-func (u *UserStorage) CheckTokenInDB(token string) ([]model.Data, bool, error) {
+func (u *UserStorage) CheckTokenInDB(token string) (model.CheckTokenResponse, bool, error) {
 
 	var resultTable []model.Data
 
-	err := u.DataBase.Select(&resultTable, "SELECT `id`, `login`, `token`, `time` FROM user WHERE `token` = ?", token)
+	err := u.DataBase.Select(&resultTable, "SELECT `id`, `login`, `time` FROM user WHERE `token` = ?", token)
 	if err != nil {
-		return nil, false, err
+		return model.CheckTokenResponse{}, false, err
 	}
 
 	if len(resultTable) == 0 {
-		return nil, false, nil
+		return model.CheckTokenResponse{}, false, nil
 	}
 
 	data := resultTable[0]
 
 	if time.Since(data.Time) > 15*time.Minute {
-		return nil, false, nil
+		return model.CheckTokenResponse{}, false, nil
 	}
 
-	return resultTable, true, nil
+	resp := model.CheckTokenResponse{
+		ID:    data.ID,
+		Login: data.Login,
+	}
+	return resp, true, nil
 }
