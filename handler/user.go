@@ -3,9 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
-	"time"
 )
 
 func (s *Server) RegistrationHandler(context *gin.Context) {
@@ -24,11 +22,7 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 		return
 	}
 
-	token := uuid.NewString()
-
-	time := time.Now()
-
-	err := s.Storage.RegistrationUserInBD(log, pass, token, time)
+	err := s.Storage.RegistrationUserInBD(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong. Try again")
@@ -55,11 +49,7 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
-	token := uuid.NewString()
-
-	time := time.Now()
-
-	resultTable, isChanged, err := s.Storage.AuthorizationUserInDB(log, pass, token, time)
+	resultTable, isChanged, err := s.Storage.AuthorizationUserInDB(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong. Try again")
@@ -67,6 +57,7 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 	}
 
 	if isChanged == false {
+		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong")
 		return
 	}
@@ -93,7 +84,8 @@ func (s *Server) CheckTokenHandler(context *gin.Context) {
 	token, ok := context.GetQuery("token")
 	if token == "" || !ok {
 		context.Status(http.StatusBadRequest)
-		context.Writer.WriteString("Password is missing")
+		context.Writer.WriteString("token is missing")
 		return
 	}
+
 }
