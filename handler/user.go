@@ -49,22 +49,16 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
-	resultTable, isChanged, err := s.Storage.AuthorizationUserInDB(log, pass)
+	resultTable, ok, err := s.Storage.AuthorizationUserInDB(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong. Try again")
 		return
 	}
 
-	if isChanged == false {
-		context.Status(http.StatusInternalServerError)
+	if ok == false {
+		context.Status(http.StatusUnauthorized)
 		context.Writer.WriteString("Something went wrong")
-		return
-	}
-
-	if len(resultTable) == 0 {
-		context.Status(http.StatusNotFound)
-		context.Writer.WriteString("Wrong login or password. Try again")
 		return
 	}
 
@@ -98,12 +92,6 @@ func (s *Server) CheckTokenHandler(context *gin.Context) {
 	if connect == false {
 		context.Status(http.StatusUnauthorized)
 		context.Writer.WriteString("Session time is over")
-		return
-	}
-
-	if len(resultTable) == 0 {
-		context.Status(http.StatusNotFound)
-		context.Writer.WriteString("The User is not found.")
 		return
 	}
 
