@@ -13,6 +13,11 @@ type Data struct {
 	Time     time.Time `db:"time" json:"time"`
 }
 
+type CheckTokenResponse struct {
+	ID    int    `json:"id"`
+	Login string `json:"login"`
+}
+
 type Config struct {
 	DataSourceName string `json:"dataSourceName"`
 	Port           int    `json:"port"`
