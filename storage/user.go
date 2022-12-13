@@ -15,11 +15,11 @@ func (u *UserStorage) RegistrationUserInBD(log, pass, token string, time time.Ti
 	return nil
 }
 
-func (u *UserStorage) AuthorizationUserInDB(log, pass, token string) ([]model.Data, bool, error) {
+func (u *UserStorage) AuthorizationUserInDB(log, pass, token string, time time.Time) ([]model.Data, bool, error) {
 
 	var resultTable []model.Data
 
-	res, err := u.DataBase.Exec("UPDATE user SET `token` = ? WHERE `login` = ? AND `password` = ?", token, log, pass)
+	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `password` = ?", token, time, log, pass)
 	if err != nil {
 		return nil, false, err
 	}
@@ -43,4 +43,8 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass, token string) ([]model.Da
 	}
 
 	return resultTable, true, nil
+}
+
+func (u *UserStorage) CheckTokenInDB() {
+
 }
