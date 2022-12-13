@@ -68,6 +68,7 @@ func (u *UserStorage) CheckTokenInDB(token string) ([]model.Data, bool, error) {
 	}
 
 	data := resultTable[0]
+
 	if time.Since(data.Time) > 15*time.Second {
 		return nil, false, err
 	}
