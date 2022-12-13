@@ -1,8 +1,8 @@
 ### Запрос на регистрацию
-POST http://localhost:80/register_a_user?login=maxxx&password=123213123
+POST http://localhost:80/register_a_user?login=max&password=123213123
 
 ### Запрос на авторизацию
 GET http://localhost:80/authorization?login=maxxx&password=123213123
 
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=191da534-340b-4955-9b9c-bd84153191fd
+GET http://localhost:80/check_tok?token=9c752694-8996-4912-bce6-196ebf2f0fdc
