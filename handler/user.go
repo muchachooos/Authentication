@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -90,6 +91,7 @@ func (s *Server) CheckTokenHandler(context *gin.Context) {
 
 	resultTable, connect, err := s.Storage.CheckTokenInDB(token)
 	if err != nil {
+		fmt.Println("ERROOOOOR: ", err)
 		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong")
 		return
