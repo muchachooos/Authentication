@@ -54,6 +54,23 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) ([]model.Data, boo
 	return resultTable, true, nil
 }
 
-func (u *UserStorage) CheckTokenInDB(token string, time time.Time) {
+func (u *UserStorage) CheckTokenInDB(token string) ([]model.Data, bool, error) {
 
+	var resultTable []model.Data
+
+	err := u.DataBase.Select(&resultTable, "SELECT * FROM user WHERE `token` = ?", token)
+	if err != nil {
+		return nil, false, err
+	}
+
+	if len(resultTable) == 0 {
+		return nil, false, err
+	}
+
+	data := resultTable[0]
+	if time.Since(data.Time) > 15*time.Second {
+		return nil, false, err
+	}
+
+	return resultTable, true, nil
 }
