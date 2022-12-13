@@ -2,10 +2,15 @@ package storage
 
 import (
 	"Authorization/model"
+	"github.com/google/uuid"
 	"time"
 )
 
-func (u *UserStorage) RegistrationUserInBD(log, pass, token string, time time.Time) error {
+func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
+
+	token := uuid.NewString()
+
+	time := time.Now()
 
 	_, err := u.DataBase.Exec("INSERT INTO user (`login`, `password`, `token`, `time`) VALUES (?,?,?,?)", log, pass, token, time)
 	if err != nil {
@@ -15,14 +20,18 @@ func (u *UserStorage) RegistrationUserInBD(log, pass, token string, time time.Ti
 	return nil
 }
 
-func (u *UserStorage) AuthorizationUserInDB(log, pass, token string, time time.Time) ([]model.Data, bool, error) {
+func (u *UserStorage) AuthorizationUserInDB(log, pass string) ([]model.Data, bool, error) {
 
-	var resultTable []model.Data
+	token := uuid.NewString()
+
+	time := time.Now()
 
 	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `password` = ?", token, time, log, pass)
 	if err != nil {
 		return nil, false, err
 	}
+
+	var resultTable []model.Data
 
 	err = u.DataBase.Select(&resultTable, "SELECT * FROM user WHERE `login` = ? AND `password` = ?", log, pass)
 	if err != nil {
@@ -45,6 +54,6 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass, token string, time time.T
 	return resultTable, true, nil
 }
 
-func (u *UserStorage) CheckTokenInDB() {
+func (u *UserStorage) CheckTokenInDB(token string, time time.Time) {
 
 }
