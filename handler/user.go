@@ -75,8 +75,8 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
+	context.Status(http.StatusOK)
 	context.Writer.Write(jsonInByte)
-
 }
 
 func (s *Server) CheckTokenHandler(context *gin.Context) {
@@ -88,4 +88,25 @@ func (s *Server) CheckTokenHandler(context *gin.Context) {
 		return
 	}
 
+	resultTable, connect, err := s.Storage.CheckTokenInDB(token)
+	if err != nil {
+		context.Status(http.StatusInternalServerError)
+		context.Writer.WriteString("Something went wrong")
+		return
+	}
+
+	if connect == false {
+		context.Status(http.StatusUnauthorized)
+		context.Writer.WriteString("Session time is over")
+		return
+	}
+
+	if len(resultTable) == 0 {
+		context.Status(http.StatusNotFound)
+		context.Writer.WriteString("The User is not found.")
+		return
+	}
+
+	context.Status(http.StatusOK)
+	context.Writer.WriteString("Welcome to the club Body")
 }
