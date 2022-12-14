@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -25,6 +26,7 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 	err := s.Storage.RegistrationUserInBD(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
+		fmt.Println(err)
 		context.Writer.WriteString("Something went wrong. Try again")
 		return
 	}
