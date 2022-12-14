@@ -2,6 +2,7 @@ package storage
 
 import (
 	"Authorization/model"
+	"Authorization/utilities"
 	"github.com/google/uuid"
 	"time"
 )
@@ -12,7 +13,12 @@ func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
 
 	time := time.Now()
 
-	_, err := u.DataBase.Exec("INSERT INTO user (`login`, `password`, `token`, `time`) VALUES (?,?,?,?)", log, pass, token, time)
+	hashedPass, err := utilities.HashingPassword(pass)
+	if err != nil {
+		return err
+	}
+
+	_, err = u.DataBase.Exec("INSERT INTO user (`login`, `hashPass`, `token`, `time`) VALUES (?,?,?,?)", log, hashedPass, token, time)
 	if err != nil {
 		return err
 	}
