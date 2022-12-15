@@ -1,8 +1,8 @@
 ### Запрос на регистрацию
-POST http://localhost:80/register_a_user?login=mmax&password=123213123
+POST http://localhost:80/register_a_user?login=goga&password=123213123
 
 ### Запрос на авторизацию
-GET http://localhost:80/authorization?login=max&password=123213123
+GET http://localhost:80/authorization?login=goga&password=123213123
 
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=c3761a91-55b2-4864-9fe8-faf6969cd8ec
+GET http://localhost:80/check_tok?token=1d1394c2-c52b-4112-87af-5a48a18f2d52
