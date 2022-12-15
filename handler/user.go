@@ -26,7 +26,6 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 	err := s.Storage.RegistrationUserInBD(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
-		fmt.Println(err)
 		context.Writer.WriteString("Something went wrong. Try again")
 		return
 	}
@@ -54,6 +53,7 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 	resultTable, ok, err := s.Storage.AuthorizationUserInDB(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
+		fmt.Println("ERR : ", err)
 		context.Writer.WriteString("Something went wrong. Try again")
 		return
 	}
