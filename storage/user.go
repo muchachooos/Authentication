@@ -3,6 +3,7 @@ package storage
 import (
 	"Authorization/model"
 	"Authorization/utilities"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -26,43 +27,78 @@ func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
 	return nil
 }
 
-func (u *UserStorage) AuthorizationUserInDB(log, pass string) ([]model.Data, bool, error) {
+func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.User, bool, error) {
 
-	token := uuid.NewString()
+	var result []model.HashPass
+
+	err := u.DataBase.Select(&result, "SELECT `hashPass` FROM user WHERE `login` = ?", log)
+	if err != nil {
+		fmt.Println(1111111)
+		return model.User{}, false, err
+	}
+
+	if len(result) == 0 {
+		fmt.Println(222)
+		return model.User{}, false, nil
+	}
+
+	dataHash := result[0]
+
+	err = utilities.CompareHashPassword(dataHash.HashedPass, pass)
+	if err != nil {
+		fmt.Println(333)
+		return model.User{}, false, err
+	}
 
 	time := time.Now()
+	token := uuid.NewString()
 
-	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `password` = ?", token, time, log, pass)
+	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashPass` = ?", token, time, log, dataHash.HashedPass)
 	if err != nil {
-		return nil, false, err
-	}
-
-	var resultTable []model.Data
-
-	err = u.DataBase.Select(&resultTable, "SELECT * FROM user WHERE `login` = ? AND `password` = ?", log, pass)
-	if err != nil {
-		return nil, false, err
-	}
-
-	if len(resultTable) == 0 {
-		return nil, false, nil
+		fmt.Println(444)
+		return model.User{}, false, err
 	}
 
 	countOfChangedRows, err := res.RowsAffected()
 	if err != nil {
-		return nil, false, nil
+		fmt.Println(555)
+		return model.User{}, false, nil
 	}
 
 	if countOfChangedRows == 0 {
-		return nil, false, nil
+		fmt.Println(666)
+		return model.User{}, false, nil
 	}
 
-	return resultTable, true, nil
+	var resultTable []model.User
+
+	err = u.DataBase.Select(&resultTable, "SELECT * FROM user WHERE `login` = ? AND `hashPass` = ?", log, dataHash.HashedPass)
+	if err != nil {
+		fmt.Println(777)
+		return model.User{}, false, err
+	}
+
+	if len(resultTable) == 0 {
+		fmt.Println(888)
+		return model.User{}, false, nil
+	}
+
+	data := resultTable[0]
+
+	resp := model.User{
+		ID:         data.ID,
+		Login:      data.Login,
+		HashedPass: data.HashedPass,
+		Token:      data.Token,
+		Time:       data.Time,
+	}
+
+	return resp, true, nil
 }
 
 func (u *UserStorage) CheckTokenInDB(token string) (model.CheckTokenResponse, bool, error) {
 
-	var resultTable []model.Data
+	var resultTable []model.User
 
 	err := u.DataBase.Select(&resultTable, "SELECT `id`, `login`, `time` FROM user WHERE `token` = ?", token)
 	if err != nil {
