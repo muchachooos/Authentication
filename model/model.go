@@ -26,3 +26,12 @@ type Config struct {
 	DataSourceName string `json:"dataSourceName"`
 	Port           int    `json:"port"`
 }
+
+type Err struct {
+	Error string `json:"error"`
+}
+
+type RegRequest struct {
+	Login string `json:"login"`
+	Pass  string `json:"pass"`
+}
