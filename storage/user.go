@@ -56,7 +56,7 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.User, bool,
 
 	countOfChangedRows, err := res.RowsAffected()
 	if err != nil {
-		return model.User{}, false, nil
+		return model.User{}, false, err
 	}
 
 	if countOfChangedRows == 0 {
