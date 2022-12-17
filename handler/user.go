@@ -40,19 +40,19 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 
 func (s *Server) AuthorizationHandler(context *gin.Context) {
 
-	error := model.Err{
-		Error: "Bad Request",
-	}
-
-	errInByte, err := json.Marshal(error)
-	if err != nil {
-		return
-	}
-
 	bodyInBytes, err := io.ReadAll(context.Request.Body)
 	if err != nil {
-		context.Status(http.StatusBadRequest)
-		context.Writer.Write(errInByte)
+		//error := model.Err{
+		//	Error: "Bad Request",
+		//}
+
+		//errInByte, err := json.Marshal(error)
+		//if err != nil {
+		//	return
+		//}
+		//context.Status(http.StatusBadRequest)
+		//context.Writer.Write(errInByte)
+		context.JSON(http.StatusBadRequest, model.Err{Error: "Bad Request"})
 		return
 	}
 
