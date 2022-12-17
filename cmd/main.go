@@ -14,17 +14,18 @@ import (
 )
 
 func main() {
+
 	router := gin.Default()
 
-	var conf model.Config
-
-	byte, err := os.ReadFile("./configuration.json")
+	configInBytes, err := os.ReadFile("./configuration.json")
 	if err != nil {
 		fmt.Println("Error Read File:", err)
 		return
 	}
 
-	err = json.Unmarshal(byte, &conf)
+	var conf model.Config
+
+	err = json.Unmarshal(configInBytes, &conf)
 	if err != nil {
 		fmt.Println("Error Unmarshal:", err)
 		return
