@@ -49,7 +49,7 @@ func main() {
 	}
 
 	router.POST("/register_a_user", server.RegistrationHandler)
-	router.GET("/authorization", server.AuthorizationHandler)
+	router.POST("/authorization", server.AuthorizationHandler)
 	router.GET("/check_tok", server.CheckTokenHandler)
 
 	port := ":" + strconv.Itoa(conf.Port)
