@@ -1,8 +1,26 @@
 ### Запрос на регистрацию
-POST http://localhost:80/register_a_user?login=goga&password=123213123
+POST http://localhost:80/register_a_user
+Content-Type: application/json
+
+{
+  "password": "",
+  "login": "GRIgo"
+}
 
 ### Запрос на авторизацию
-GET http://localhost:80/authorization?login=goga&password=123213123
+GET http://localhost:80/authorization?login=&password=
+
+### Запрос на авторизацию
+GET http://localhost:80/authorization?login=max&password=123213123
+
+### Запрос на авторизацию
+GET http://localhost:80/authorization?login=greg&password=123213123
+
+### Запрос на авторизацию
+GET http://localhost:80/authorization?login=kat&password=123213123
+
+### Запрос на авторизацию
+GET http://localhost:80/authorization?login=many&password=6684bkj5
 
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=1d1394c2-c52b-4112-87af-5a48a18f2d52
+GET http://localhost:80/check_tok?token=49b5fe8a-0a0c-470f-88a3-34b4cfe02df9
