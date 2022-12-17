@@ -74,17 +74,7 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.User, bool,
 		return model.User{}, false, nil
 	}
 
-	data := resultTable[0]
-
-	resp := model.User{
-		ID:         data.ID,
-		Login:      data.Login,
-		HashedPass: data.HashedPass,
-		Token:      data.Token,
-		Time:       data.Time,
-	}
-
-	return resp, true, nil
+	return resultTable[0], true, nil
 }
 
 func (u *UserStorage) CheckTokenInDB(token string) (model.CheckTokenResponse, bool, error) {
