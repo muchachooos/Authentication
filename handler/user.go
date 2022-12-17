@@ -2,7 +2,6 @@ package handler
 
 import (
 	"Authorization/model"
-	"fmt"
 	"io"
 
 	"encoding/json"
@@ -14,8 +13,7 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 
 	bodyInBytes, err := io.ReadAll(context.Request.Body)
 	if err != nil {
-		context.Status(http.StatusInternalServerError)
-		context.Writer.WriteString("Something went wrong. Try again")
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Read body error: " + err.Error()})
 		return
 	}
 
@@ -23,36 +21,24 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 
 	err = json.Unmarshal(bodyInBytes, &regReq)
 	if err != nil {
-		fmt.Println("Error Unmarshal:", err)
+		context.JSON(http.StatusBadRequest, model.Err{Error: "Unmarshal request body error: " + err.Error()})
 		return
 	}
 
 	err = s.Storage.RegistrationUserInBD(regReq.Login, regReq.Pass)
 	if err != nil {
-		context.Status(http.StatusInternalServerError)
-		context.Writer.WriteString("Something went wrong. Try again")
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Database error: " + err.Error()})
 		return
 	}
 
-	context.Status(http.StatusOK)
-	context.Writer.WriteString("Welcome to the club Body")
+	context.JSON(http.StatusOK, model.Err{Error: "Welcome to the club Body"})
 }
 
 func (s *Server) AuthorizationHandler(context *gin.Context) {
 
 	bodyInBytes, err := io.ReadAll(context.Request.Body)
 	if err != nil {
-		//error := model.Err{
-		//	Error: "Bad Request",
-		//}
-
-		//errInByte, err := json.Marshal(error)
-		//if err != nil {
-		//	return
-		//}
-		//context.Status(http.StatusBadRequest)
-		//context.Writer.Write(errInByte)
-		context.JSON(http.StatusBadRequest, model.Err{Error: "Bad Request"})
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Read body error: " + err.Error()})
 		return
 	}
 
@@ -60,28 +46,24 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 
 	err = json.Unmarshal(bodyInBytes, &regReq)
 	if err != nil {
-		fmt.Println("Error Unmarshal:", err)
+		context.JSON(http.StatusBadRequest, model.Err{Error: "Unmarshal request body error: " + err.Error()})
 		return
 	}
 
 	resultTable, ok, err := s.Storage.AuthorizationUserInDB(regReq.Login, regReq.Pass)
 	if err != nil {
-		fmt.Println(err)
-		context.Status(http.StatusInternalServerError)
-		context.Writer.WriteString("Something went wrong. Try again")
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Database error: " + err.Error()})
 		return
 	}
 
 	if ok == false {
-		context.Status(http.StatusUnauthorized)
-		context.Writer.WriteString("Something went wrong")
+		context.JSON(http.StatusUnauthorized, model.Err{Error: " ??? "})
 		return
 	}
 
 	jsonInByte, err := json.Marshal(resultTable)
 	if err != nil {
-		context.Status(http.StatusInternalServerError)
-		context.Writer.WriteString("json creating error")
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "json creating error: " + err.Error()})
 		return
 	}
 
