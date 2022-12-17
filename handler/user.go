@@ -41,7 +41,7 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 func (s *Server) AuthorizationHandler(context *gin.Context) {
 
 	error := model.Err{
-		Error: "Login is missing",
+		Error: "Bad Request",
 	}
 
 	errInByte, err := json.Marshal(error)
@@ -49,22 +49,24 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
-	log, ok := context.GetQuery("login")
-	if log == "" || !ok {
+	bodyInBytes, err := io.ReadAll(context.Request.Body)
+	if err != nil {
 		context.Status(http.StatusBadRequest)
 		context.Writer.Write(errInByte)
 		return
 	}
 
-	pass, ok := context.GetQuery("password")
-	if pass == "" || !ok {
-		context.Status(http.StatusBadRequest)
-		context.Writer.WriteString("No password")
+	var regReq model.RegRequest
+
+	err = json.Unmarshal(bodyInBytes, &regReq)
+	if err != nil {
+		fmt.Println("Error Unmarshal:", err)
 		return
 	}
 
-	resultTable, ok, err := s.Storage.AuthorizationUserInDB(log, pass)
+	resultTable, ok, err := s.Storage.AuthorizationUserInDB(regReq.Login, regReq.Pass)
 	if err != nil {
+		fmt.Println(err)
 		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong. Try again")
 		return
