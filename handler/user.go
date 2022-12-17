@@ -1,29 +1,33 @@
 package handler
 
 import (
-	"encoding/json"
+	"Authorization/model"
 	"fmt"
+	"io"
+
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func (s *Server) RegistrationHandler(context *gin.Context) {
 
-	log, ok := context.GetQuery("login")
-	if log == "" || !ok {
-		context.Status(http.StatusBadRequest)
-		context.Writer.WriteString("Login is missing")
+	bodyInBytes, err := io.ReadAll(context.Request.Body)
+	if err != nil {
+		context.Status(http.StatusInternalServerError)
+		context.Writer.WriteString("Something went wrong. Try again")
 		return
 	}
 
-	pass, ok := context.GetQuery("password")
-	if pass == "" || !ok {
-		context.Status(http.StatusBadRequest)
-		context.Writer.WriteString("Password is missing")
+	var regReq model.RegRequest
+
+	err = json.Unmarshal(bodyInBytes, &regReq)
+	if err != nil {
+		fmt.Println("Error Unmarshal:", err)
 		return
 	}
 
-	err := s.Storage.RegistrationUserInBD(log, pass)
+	err = s.Storage.RegistrationUserInBD(regReq.Login, regReq.Pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
 		context.Writer.WriteString("Something went wrong. Try again")
@@ -36,10 +40,19 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 
 func (s *Server) AuthorizationHandler(context *gin.Context) {
 
+	error := model.Err{
+		Error: "Login is missing",
+	}
+
+	errInByte, err := json.Marshal(error)
+	if err != nil {
+		return
+	}
+
 	log, ok := context.GetQuery("login")
 	if log == "" || !ok {
 		context.Status(http.StatusBadRequest)
-		context.Writer.WriteString("No login")
+		context.Writer.Write(errInByte)
 		return
 	}
 
@@ -53,7 +66,6 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 	resultTable, ok, err := s.Storage.AuthorizationUserInDB(log, pass)
 	if err != nil {
 		context.Status(http.StatusInternalServerError)
-		fmt.Println("ERR : ", err)
 		context.Writer.WriteString("Something went wrong. Try again")
 		return
 	}
