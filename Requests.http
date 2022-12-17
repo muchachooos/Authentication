@@ -3,8 +3,8 @@ POST http://localhost:80/register_a_user
 Content-Type: application/json
 
 {
-  "login": "rob",
-  "password": "13wr4r444"
+  "login": "ytyty",
+  "password": "fef2422ccccc"
 }
 
 ### Запрос на авторизацию
@@ -16,5 +16,13 @@ Content-Type: application/json
   "password": "13wr4r444"
 }
 
+### Запрос на авторизацию
+POST http://localhost:80/authorization
+Content-Type: application/json
+
+{
+"login": "rob",
+"password": "13wr4r444"
+}
 ### Запрос на проверку по токену
 GET http://localhost:80/check_tok?token=a51ee28c-f76b-42f1-88d7-76b9142225cd
