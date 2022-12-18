@@ -13,12 +13,12 @@ func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
 
 	time := time.Now()
 
-	hashedPass, err := utilities.HashingPassword(pass)
+	hashedPass, err := utilities.GenerateHashPassword(pass)
 	if err != nil {
 		return err
 	}
 
-	_, err = u.DataBase.Exec("INSERT INTO user (`login`, `hashPass`, `token`, `time`) VALUES (?,?,?,?)", log, hashedPass, token, time)
+	_, err = u.DataBase.Exec("INSERT INTO user (`login`, `hashedPass`, `token`, `time`) VALUES (?,?,?,?)", log, hashedPass, token, time)
 	if err != nil {
 		return err
 	}
@@ -26,52 +26,53 @@ func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
 	return nil
 }
 
-func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.User, bool, error) {
+func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, bool, error) {
 
 	var result []model.HashPass
+	//var result []string
 
-	err := u.DataBase.Select(&result, "SELECT `hashPass` FROM user WHERE `login` = ?", log)
+	err := u.DataBase.Select(&result, "SELECT `hashedPass` FROM user WHERE `login` = ?", log)
 	if err != nil {
-		return model.User{}, false, err
+		return model.AuthResp{}, false, err
 	}
 
 	if len(result) == 0 {
-		return model.User{}, false, nil
+		return model.AuthResp{}, false, nil
 	}
 
 	dataHash := result[0]
 
 	err = utilities.CompareHashPassword(dataHash.HashedPass, pass)
 	if err != nil {
-		return model.User{}, false, err
+		return model.AuthResp{}, false, err
 	}
 
 	time := time.Now()
 	token := uuid.NewString()
 
-	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashPass` = ?", token, time, log, dataHash.HashedPass)
+	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashedPass` = ?", token, time, log, dataHash.HashedPass)
 	if err != nil {
-		return model.User{}, false, err
+		return model.AuthResp{}, false, err
 	}
 
 	countOfChangedRows, err := res.RowsAffected()
 	if err != nil {
-		return model.User{}, false, err
+		return model.AuthResp{}, false, err
 	}
 
 	if countOfChangedRows == 0 {
-		return model.User{}, false, nil
+		return model.AuthResp{}, false, nil
 	}
 
-	var resultTable []model.User
+	var resultTable []model.AuthResp
 
-	err = u.DataBase.Select(&resultTable, "SELECT * FROM user WHERE `login` = ? AND `hashPass` = ?", log, dataHash.HashedPass)
+	err = u.DataBase.Select(&resultTable, "SELECT `token` FROM user WHERE `login` = ? AND `hashedPass` = ?", log, dataHash.HashedPass)
 	if err != nil {
-		return model.User{}, false, err
+		return model.AuthResp{}, false, err
 	}
 
 	if len(resultTable) == 0 {
-		return model.User{}, false, nil
+		return model.AuthResp{}, false, nil
 	}
 
 	return resultTable[0], true, nil
