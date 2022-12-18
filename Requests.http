@@ -35,5 +35,5 @@ Content-Type: application/json
 "password": "234ee4456777"
 }
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=3c9b9f37-da00-4b3a-ba5a-542447fbef36
+GET http://localhost:80/check_tok?token=031e00d2-07a7-4deb-b7c7-ad91b9fa11c4
 
