@@ -57,68 +57,31 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 	}
 
 	if ok == false {
-		context.JSON(http.StatusUnauthorized, model.Err{Error: " ??? "})
+		context.JSON(http.StatusUnauthorized, model.Err{Error: "Authorized error"})
 		return
 	}
 
-	jsonInByte, err := json.Marshal(resp)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, model.Err{Error: "json creating error: " + err.Error()})
-		return
-	}
-
-	context.Status(http.StatusOK)
-	context.Writer.Write(jsonInByte)
-
+	context.JSON(http.StatusOK, resp)
 }
-
-/*
-	bodyInBytes, err := io.ReadAll(context.Request.Body)
-		if err != nil {
-			error := model.Err{
-				Error: "Bad Request",
-			}
-
-			errInByte, err := json.Marshal(error)
-			if err != nil {
-				return
-			}
-			context.Status(http.StatusBadRequest)
-			context.Writer.Write(errInByte)
-			context.JSON(http.StatusBadRequest, model.Err{Error: "Bad Request"})
-			return
-		}
-*/
 
 func (s *Server) CheckTokenHandler(context *gin.Context) {
 
 	token, ok := context.GetQuery("token")
 	if token == "" || !ok {
-		context.Status(http.StatusBadRequest)
-		context.Writer.WriteString("token is missing")
+		context.JSON(http.StatusBadRequest, model.Err{Error: "Token is missing"})
 		return
 	}
 
 	resultTable, connect, err := s.Storage.CheckTokenInDB(token)
 	if err != nil {
-		context.Status(http.StatusInternalServerError)
-		context.Writer.WriteString("Something went wrong")
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Database error: " + err.Error()})
 		return
 	}
 
 	if connect == false {
-		context.Status(http.StatusUnauthorized)
-		context.Writer.WriteString("Session time is over")
+		context.JSON(http.StatusUnauthorized, model.Err{Error: "Session time is over"})
 		return
 	}
 
-	jsonInByte, err := json.Marshal(resultTable)
-	if err != nil {
-		context.Status(http.StatusInternalServerError)
-		context.Writer.WriteString("json creating error")
-		return
-	}
-
-	context.Status(http.StatusOK)
-	context.Writer.Write(jsonInByte)
+	context.JSON(http.StatusOK, resultTable)
 }
