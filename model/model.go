@@ -23,10 +23,6 @@ type Config struct {
 	Port           int    `json:"port"`
 }
 
-type AuthResp struct {
-	Token string `json:"token"`
-}
-
 type Err struct {
 	Error string `json:"error"`
 }
