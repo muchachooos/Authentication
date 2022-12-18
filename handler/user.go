@@ -17,7 +17,7 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 		return
 	}
 
-	var regReq model.RegRequest
+	var regReq model.Request
 
 	err = json.Unmarshal(bodyInBytes, &regReq)
 	if err != nil {
@@ -31,7 +31,7 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, model.Err{Error: "Welcome to the club Body"})
+	context.Status(http.StatusOK)
 }
 
 func (s *Server) AuthorizationHandler(context *gin.Context) {
@@ -42,15 +42,15 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
-	var regReq model.RegRequest
+	var authReq model.Request
 
-	err = json.Unmarshal(bodyInBytes, &regReq)
+	err = json.Unmarshal(bodyInBytes, &authReq)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, model.Err{Error: "Unmarshal request body error: " + err.Error()})
 		return
 	}
 
-	resultTable, ok, err := s.Storage.AuthorizationUserInDB(regReq.Login, regReq.Pass)
+	resp, ok, err := s.Storage.AuthorizationUserInDB(authReq.Login, authReq.Pass)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "Database error: " + err.Error()})
 		return
@@ -61,7 +61,7 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
-	jsonInByte, err := json.Marshal(resultTable)
+	jsonInByte, err := json.Marshal(resp)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "json creating error: " + err.Error()})
 		return
@@ -69,7 +69,26 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 
 	context.Status(http.StatusOK)
 	context.Writer.Write(jsonInByte)
+
 }
+
+/*
+	bodyInBytes, err := io.ReadAll(context.Request.Body)
+		if err != nil {
+			error := model.Err{
+				Error: "Bad Request",
+			}
+
+			errInByte, err := json.Marshal(error)
+			if err != nil {
+				return
+			}
+			context.Status(http.StatusBadRequest)
+			context.Writer.Write(errInByte)
+			context.JSON(http.StatusBadRequest, model.Err{Error: "Bad Request"})
+			return
+		}
+*/
 
 func (s *Server) CheckTokenHandler(context *gin.Context) {
 
