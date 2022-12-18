@@ -14,7 +14,7 @@ type User struct {
 }
 
 type HashPass struct {
-	HashedPass string `db:"hashPass" json:"hashedPass"`
+	HashedPass string `db:"hashedPass" json:"hashedPass"`
 }
 
 type CheckTokenResponse struct {
@@ -27,11 +27,15 @@ type Config struct {
 	Port           int    `json:"port"`
 }
 
+type AuthResp struct {
+	Token string `json:"token"`
+}
+
 type Err struct {
 	Error string `json:"error"`
 }
 
-type RegRequest struct {
+type Request struct {
 	Login string `json:"login"`
-	Pass  string `json:"pass"`
+	Pass  string `json:"password"`
 }
