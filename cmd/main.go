@@ -19,7 +19,7 @@ func main() {
 
 	configInBytes, err := os.ReadFile("./configuration.json")
 	if err != nil {
-		fmt.Println("Error Read File:", err)
+		panic(err)
 		return
 	}
 
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	if dataBase == nil {
-		panic("DB nil")
+		panic("Database nil")
 		return
 	}
 
