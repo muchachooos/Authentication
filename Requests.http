@@ -3,8 +3,27 @@ POST http://localhost:80/register_a_user
 Content-Type: application/json
 
 {
-  "login": "ytyty",
-  "password": "fef2422ccccc"
+  "login": "rum",
+  "password": "123dafo"
+}
+
+### Запрос на регистрацию
+POST http://localhost:80/register_a_user
+Content-Type: application/json
+
+{
+  "login": "111aaa",
+  "password": "123dafo"
+}
+
+
+### Запрос на авторизацию
+POST http://localhost:80/authorization
+Content-Type: application/json
+
+{
+  "login": "rum",
+  "password": "123dafo"
 }
 
 ### Запрос на авторизацию
@@ -12,17 +31,9 @@ POST http://localhost:80/authorization
 Content-Type: application/json
 
 {
-  "login": "many",
-  "password": "13wr4r444"
-}
-
-### Запрос на авторизацию
-POST http://localhost:80/authorization
-Content-Type: application/json
-
-{
-"login": "rob",
-"password": "13wr4r444"
+"login": "111aaa",
+"password": "123dafo"
 }
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=a51ee28c-f76b-42f1-88d7-76b9142225cd
+GET http://localhost:80/check_tok?token=e10845c9-bcca-444a-bb64-47a1df8fae82
+
