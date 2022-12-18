@@ -6,7 +6,7 @@ import (
 
 const cost = 10
 
-func HashingPassword(pass string) (string, error) {
+func GenerateHashPassword(pass string) (string, error) {
 
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(pass), cost)
 	if err != nil {
