@@ -3,6 +3,7 @@ package storage
 import (
 	"Authorization/model"
 	"Authorization/utilities"
+	"errors"
 	"github.com/google/uuid"
 	"time"
 )
@@ -26,22 +27,22 @@ func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
 	return nil
 }
 
-func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, bool, error) {
+func (u *UserStorage) AuthorizationUserInDB(log, pass string) (string, bool, error) {
 
 	var result []string
 
 	err := u.DataBase.Select(&result, "SELECT `hashedPass` FROM user WHERE `login` = ?", log)
 	if err != nil {
-		return model.AuthResp{}, false, err
+		return "", false, err
 	}
 
 	if len(result) == 0 {
-		return model.AuthResp{}, false, nil
+		return "", false, nil
 	}
 
 	err = utilities.CompareHashPassword(result[0], pass)
 	if err != nil {
-		return model.AuthResp{}, false, err
+		return "", false, err
 	}
 
 	time := time.Now()
@@ -49,30 +50,19 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, b
 
 	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashedPass` = ?", token, time, log, result[0])
 	if err != nil {
-		return model.AuthResp{}, false, err
+		return "", false, err
 	}
 
 	countOfChangedRows, err := res.RowsAffected()
 	if err != nil {
-		return model.AuthResp{}, false, err
+		return "", false, err
 	}
 
 	if countOfChangedRows == 0 {
-		return model.AuthResp{}, false, nil
+		return "", false, errors.New("failed set token")
 	}
 
-	var resultTable []model.AuthResp
-
-	err = u.DataBase.Select(&resultTable, "SELECT `token` FROM user WHERE `login` = ? AND `hashedPass` = ?", log, result[0])
-	if err != nil {
-		return model.AuthResp{}, false, err
-	}
-
-	if len(resultTable) == 0 {
-		return model.AuthResp{}, false, nil
-	}
-
-	return resultTable[0], true, nil
+	return token, true, nil
 }
 
 func (u *UserStorage) CheckTokenInDB(token string) (model.CheckTokenResponse, bool, error) {
