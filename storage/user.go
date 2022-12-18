@@ -28,8 +28,7 @@ func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
 
 func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, bool, error) {
 
-	var result []model.HashPass
-	//var result []string
+	var result []string
 
 	err := u.DataBase.Select(&result, "SELECT `hashedPass` FROM user WHERE `login` = ?", log)
 	if err != nil {
@@ -40,9 +39,7 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, b
 		return model.AuthResp{}, false, nil
 	}
 
-	dataHash := result[0]
-
-	err = utilities.CompareHashPassword(dataHash.HashedPass, pass)
+	err = utilities.CompareHashPassword(result[0], pass)
 	if err != nil {
 		return model.AuthResp{}, false, err
 	}
@@ -50,7 +47,7 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, b
 	time := time.Now()
 	token := uuid.NewString()
 
-	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashedPass` = ?", token, time, log, dataHash.HashedPass)
+	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashedPass` = ?", token, time, log, result[0])
 	if err != nil {
 		return model.AuthResp{}, false, err
 	}
@@ -66,7 +63,7 @@ func (u *UserStorage) AuthorizationUserInDB(log, pass string) (model.AuthResp, b
 
 	var resultTable []model.AuthResp
 
-	err = u.DataBase.Select(&resultTable, "SELECT `token` FROM user WHERE `login` = ? AND `hashedPass` = ?", log, dataHash.HashedPass)
+	err = u.DataBase.Select(&resultTable, "SELECT `token` FROM user WHERE `login` = ? AND `hashedPass` = ?", log, result[0])
 	if err != nil {
 		return model.AuthResp{}, false, err
 	}
