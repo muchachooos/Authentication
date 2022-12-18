@@ -13,10 +13,6 @@ type User struct {
 	Time       time.Time `db:"time" json:"time"`
 }
 
-type HashPass struct {
-	HashedPass string `db:"hashedPass" json:"hashedPass"`
-}
-
 type CheckTokenResponse struct {
 	ID    int    `json:"id"`
 	Login string `json:"login"`
