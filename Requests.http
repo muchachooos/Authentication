@@ -12,8 +12,8 @@ POST http://localhost:80/register_a_user
 Content-Type: application/json
 
 {
-  "login": "111aaa",
-  "password": "123dafo"
+  "login": "givi",
+  "password": "234ee4456777"
 }
 
 
@@ -31,9 +31,9 @@ POST http://localhost:80/authorization
 Content-Type: application/json
 
 {
-"login": "111aaa",
-"password": "123dafo"
+"login": "givi",
+"password": "234ee4456777"
 }
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=e10845c9-bcca-444a-bb64-47a1df8fae82
+GET http://localhost:80/check_tok?token=3c9b9f37-da00-4b3a-ba5a-542447fbef36
 
