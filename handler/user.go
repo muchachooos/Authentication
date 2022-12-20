@@ -2,10 +2,9 @@ package handler
 
 import (
 	"Authorization/model"
-	"io"
-
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 )
 
