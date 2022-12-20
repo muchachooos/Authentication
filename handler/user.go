@@ -16,6 +16,12 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 		return
 	}
 
+	err = context.Request.Body.Close()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Close body error: " + err.Error()})
+		return
+	}
+
 	var regReq model.Request
 
 	err = json.Unmarshal(bodyInBytes, &regReq)
@@ -38,6 +44,12 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 	bodyInBytes, err := io.ReadAll(context.Request.Body)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "Read body error: " + err.Error()})
+		return
+	}
+
+	err = context.Request.Body.Close()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, model.Err{Error: "Close body error: " + err.Error()})
 		return
 	}
 
