@@ -6,12 +6,3 @@ CREATE TABLE `user`
     `token`    CHAR(36) UNIQUE,
     `time`     DATETIME
 );
-
-DROP TABLE `user`;
-SHOW DATABASES;
-USE auth_data;
-SHOW TABLES;
-SELECT *
-FROM user;
-
-# SELECT EXISTS(SELECT * FROM user WHERE time = ?)
