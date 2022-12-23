@@ -77,6 +77,13 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 
 func (s *Server) CheckTokenHandler(context *gin.Context) {
 
+	authFromHeader := context.Request.Header.Get("Authorization")
+
+	if s.Key != authFromHeader {
+		context.JSON(http.StatusUnauthorized, model.Err{Error: "Auth Key is wrong"})
+		return
+	}
+
 	token, ok := context.GetQuery("token")
 	if token == "" || !ok {
 		context.JSON(http.StatusBadRequest, model.Err{Error: "Token is missing"})
