@@ -21,6 +21,7 @@ type CheckTokenResponse struct {
 type Config struct {
 	DataSourceName string `json:"dataSourceName"`
 	Port           int    `json:"port"`
+	Key            string `json:"auth_key"`
 }
 
 type Err struct {
