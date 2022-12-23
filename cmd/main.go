@@ -46,6 +46,7 @@ func main() {
 		Storage: &storage.UserStorage{
 			DataBase: dataBase,
 		},
+		Key: conf.Key,
 	}
 
 	router.POST("/register_a_user", server.RegistrationHandler)
