@@ -3,17 +3,8 @@ POST http://localhost:80/register_a_user
 Content-Type: application/json
 
 {
-  "login": "rum",
-  "password": "123dafo"
-}
-
-### Запрос на регистрацию
-POST http://localhost:80/register_a_user
-Content-Type: application/json
-
-{
-  "login": "givi",
-  "password": "234ee4456777"
+  "login": "",
+  "password": ""
 }
 
 
@@ -22,18 +13,9 @@ POST http://localhost:80/authorization
 Content-Type: application/json
 
 {
-  "login": "rum",
-  "password": "123dafo"
-}
-
-### Запрос на авторизацию
-POST http://localhost:80/authorization
-Content-Type: application/json
-
-{
-"login": "givi",
-"password": "234ee4456777"
+"login": "",
+"password": ""
 }
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=031e00d2-07a7-4deb-b7c7-ad91b9fa11c4
-
+GET http://localhost:80/check_tok?token=
+Authorization: test_key_123
