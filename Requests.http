@@ -3,19 +3,18 @@ POST http://localhost:80/register_a_user
 Content-Type: application/json
 
 {
-  "login": "",
-  "password": ""
+  "login": "qwerty",
+  "password": "123"
 }
-
 
 ### Запрос на авторизацию
 POST http://localhost:80/authorization
 Content-Type: application/json
 
 {
-"login": "",
-"password": ""
+"login": "qwerty",
+"password": "123"
 }
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=
+GET http://localhost:80/check_tok?token=bc654a2b-63c3-4c5e-8ed8-0dc6f5e74469
 Authorization: test_key_123
