@@ -1,5 +1,5 @@
 ### Запрос на регистрацию
-POST http://localhost:80/register_a_user
+POST http://localhost:80/registration
 Content-Type: application/json
 
 {
@@ -15,6 +15,7 @@ Content-Type: application/json
 "login": "qwerty",
 "password": "123"
 }
+
 ### Запрос на проверку по токену
-GET http://localhost:80/check_tok?token=bc654a2b-63c3-4c5e-8ed8-0dc6f5e74469
+GET http://localhost:80/check_token?token=bc654a2b-63c3-4c5e-8ed8-0dc6f5e74469
 Authorization: test_key_123

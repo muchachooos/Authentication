@@ -4,5 +4,5 @@ CREATE TABLE `user`
     `login`    VARCHAR(25) UNIQUE CHECK (`login` != '')      NOT NULL,
     `hashedPass` VARCHAR(300) UNIQUE CHECK ( `hashedPass` != '') NOT NULL,
     `token`    CHAR(36) UNIQUE,
-    `time`     DATETIME
+    `tokenTTL`     DATETIME
 );

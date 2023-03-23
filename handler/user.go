@@ -9,7 +9,6 @@ import (
 )
 
 func (s *Server) RegistrationHandler(context *gin.Context) {
-
 	bodyInBytes, err := io.ReadAll(context.Request.Body)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "Read body error: " + err.Error()})
@@ -40,7 +39,6 @@ func (s *Server) RegistrationHandler(context *gin.Context) {
 }
 
 func (s *Server) AuthorizationHandler(context *gin.Context) {
-
 	bodyInBytes, err := io.ReadAll(context.Request.Body)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "Read body error: " + err.Error()})
@@ -61,25 +59,23 @@ func (s *Server) AuthorizationHandler(context *gin.Context) {
 		return
 	}
 
-	resp, ok, err := s.Storage.AuthorizationUserInDB(authReq.Login, authReq.Pass)
+	token, err := s.Storage.AuthorizationUserInDB(authReq.Login, authReq.Pass)
 	if err != nil {
+		if err == model.ErrorAuthorized {
+			context.JSON(http.StatusUnauthorized, model.Err{Error: err.Error()})
+			return
+		}
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "Database error: " + err.Error()})
 		return
 	}
 
-	if ok == false {
-		context.JSON(http.StatusUnauthorized, model.Err{Error: "Authorized error"})
-		return
-	}
-
-	context.JSON(http.StatusOK, resp)
+	context.JSON(http.StatusOK, token)
 }
 
 func (s *Server) CheckTokenHandler(context *gin.Context) {
+	keyFromHeader := context.Request.Header.Get("Authorization")
 
-	authFromHeader := context.Request.Header.Get("Authorization")
-
-	if s.Key != authFromHeader {
+	if s.Key != keyFromHeader {
 		context.JSON(http.StatusUnauthorized, model.Err{Error: "Auth Key is wrong"})
 		return
 	}
@@ -90,16 +86,15 @@ func (s *Server) CheckTokenHandler(context *gin.Context) {
 		return
 	}
 
-	resultTable, connect, err := s.Storage.CheckTokenInDB(token)
+	user, err := s.Storage.CheckTokenInDB(token)
 	if err != nil {
+		if err == model.ErrorCheckToken || err == model.ErrorTokenTTLisOver {
+			context.JSON(http.StatusUnauthorized, model.Err{Error: err.Error()})
+			return
+		}
 		context.JSON(http.StatusInternalServerError, model.Err{Error: "Database error: " + err.Error()})
 		return
 	}
 
-	if connect == false {
-		context.JSON(http.StatusUnauthorized, model.Err{Error: "Session time is over"})
-		return
-	}
-
-	context.JSON(http.StatusOK, resultTable)
+	context.JSON(http.StatusOK, user)
 }

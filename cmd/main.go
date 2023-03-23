@@ -5,7 +5,6 @@ import (
 	"Authorization/model"
 	"Authorization/storage"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -14,50 +13,44 @@ import (
 )
 
 func main() {
-
 	router := gin.Default()
 
 	configInBytes, err := os.ReadFile("./configuration.json")
 	if err != nil {
 		panic(err)
-		return
 	}
 
-	var conf model.Config
+	var config model.Config
 
-	err = json.Unmarshal(configInBytes, &conf)
-	if err != nil {
-		fmt.Println("Error Unmarshal:", err)
-		return
-	}
-
-	dataBase, err := sqlx.Open("mysql", conf.DataSourceName)
+	err = json.Unmarshal(configInBytes, &config)
 	if err != nil {
 		panic(err)
-		return
+	}
+
+	dataBase, err := sqlx.Open("mysql", config.DataSourceName)
+	if err != nil {
+		panic(err)
 	}
 
 	if dataBase == nil {
 		panic("Database nil")
-		return
 	}
 
 	server := handler.Server{
 		Storage: &storage.UserStorage{
 			DataBase: dataBase,
 		},
-		Key: conf.Key,
+		Key: config.Key,
 	}
 
-	router.POST("/register_a_user", server.RegistrationHandler)
+	router.POST("/registration", server.RegistrationHandler)
 	router.POST("/authorization", server.AuthorizationHandler)
-	router.GET("/check_tok", server.CheckTokenHandler)
+	router.GET("/check_token", server.CheckTokenHandler)
 
-	port := ":" + strconv.Itoa(conf.Port)
+	port := ":" + strconv.Itoa(config.Port)
 
 	err = router.Run(port)
 	if err != nil {
 		panic(err)
-		return
 	}
 }

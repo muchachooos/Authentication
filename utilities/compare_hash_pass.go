@@ -5,11 +5,5 @@ import (
 )
 
 func CompareHashPassword(hashedPass, pass string) error {
-
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(pass))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(pass))
 }

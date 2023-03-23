@@ -3,90 +3,79 @@ package storage
 import (
 	"Authorization/model"
 	"Authorization/utilities"
+	"database/sql"
 	"errors"
 	"github.com/google/uuid"
 	"time"
 )
 
+const tokenTTL = 15 * time.Minute
+
 func (u *UserStorage) RegistrationUserInBD(log, pass string) error {
-
-	token := uuid.NewString()
-
-	time := time.Now()
-
 	hashedPass, err := utilities.GenerateHashPassword(pass)
 	if err != nil {
 		return err
 	}
 
-	_, err = u.DataBase.Exec("INSERT INTO user (`login`, `hashedPass`, `token`, `time`) VALUES (?,?,?,?)", log, hashedPass, token, time)
-	if err != nil {
-		return err
-	}
+	_, err = u.DataBase.Exec("INSERT INTO user (`login`, `hashedPass`, `token`, `tokenTTL`) VALUES (?,?,?,?)", log, hashedPass, uuid.NewString(), time.Now())
 
-	return nil
+	return err
 }
 
-func (u *UserStorage) AuthorizationUserInDB(log, pass string) (string, bool, error) {
+func (u *UserStorage) AuthorizationUserInDB(log, pass string) (string, error) {
+	var hashedPass string
 
-	var result []string
-
-	err := u.DataBase.Select(&result, "SELECT `hashedPass` FROM user WHERE `login` = ?", log)
+	err := u.DataBase.Get(&hashedPass, "SELECT `hashedPass` FROM user WHERE `login` = ?", log)
 	if err != nil {
-		return "", false, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", model.ErrorAuthorized
+		}
+		return "", err
 	}
 
-	if len(result) == 0 {
-		return "", false, nil
-	}
-
-	err = utilities.CompareHashPassword(result[0], pass)
+	err = utilities.CompareHashPassword(hashedPass, pass)
 	if err != nil {
-		return "", false, err
+		return "", model.ErrorAuthorized
 	}
 
-	time := time.Now()
 	token := uuid.NewString()
 
-	res, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `time` = ? WHERE `login` = ? AND `hashedPass` = ?", token, time, log, result[0])
+	result, err := u.DataBase.Exec("UPDATE user SET `token` = ?, `tokenTTL` = ? WHERE `login` = ? AND `hashedPass` = ?", token, time.Now(), log, hashedPass)
 	if err != nil {
-		return "", false, err
+		return "", err
 	}
 
-	countOfChangedRows, err := res.RowsAffected()
+	countOfChangedRows, err := result.RowsAffected()
 	if err != nil {
-		return "", false, err
+		return "", err
 	}
 
 	if countOfChangedRows == 0 {
-		return "", false, errors.New("failed set token")
+		return "", errors.New("failed set token")
 	}
 
-	return token, true, nil
+	return token, nil
 }
 
-func (u *UserStorage) CheckTokenInDB(token string) (model.CheckTokenResponse, bool, error) {
+func (u *UserStorage) CheckTokenInDB(token string) (model.CheckTokenResponse, error) {
+	var user model.User
 
-	var resultTable []model.User
-
-	err := u.DataBase.Select(&resultTable, "SELECT `id`, `login`, `time` FROM user WHERE `token` = ?", token)
+	err := u.DataBase.Get(&user, "SELECT * FROM user WHERE `token` = ?", token)
 	if err != nil {
-		return model.CheckTokenResponse{}, false, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return model.CheckTokenResponse{}, model.ErrorCheckToken
+		}
+		return model.CheckTokenResponse{}, err
 	}
 
-	if len(resultTable) == 0 {
-		return model.CheckTokenResponse{}, false, nil
+	if time.Since(user.TokenTimeToLive) > tokenTTL {
+		return model.CheckTokenResponse{}, model.ErrorTokenTTLisOver
 	}
 
-	data := resultTable[0]
-
-	if time.Since(data.Time) > 15*time.Minute {
-		return model.CheckTokenResponse{}, false, nil
+	result := model.CheckTokenResponse{
+		ID:    user.ID,
+		Login: user.Login,
 	}
 
-	resp := model.CheckTokenResponse{
-		ID:    data.ID,
-		Login: data.Login,
-	}
-	return resp, true, nil
+	return result, nil
 }
