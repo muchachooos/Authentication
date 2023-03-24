@@ -5,6 +5,7 @@ import (
 	"Authorization/model"
 	"Authorization/storage"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -27,7 +28,7 @@ func main() {
 		panic(err)
 	}
 
-	dataBase, err := sqlx.Open("mysql", config.DataSourceName)
+	dataBase, err := sqlx.Open("mysql", getDSN(config.DBConf))
 	if err != nil {
 		panic(err)
 	}
@@ -53,4 +54,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func getDSN(conf model.DBConf) string {
+	return fmt.Sprintf("%s:%s@http(%s:%d)/%s?parseTime=true",
+		conf.User, conf.Password, conf.Host, &conf.Port, conf.DBName)
 }
