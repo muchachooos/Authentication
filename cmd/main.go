@@ -56,7 +56,7 @@ func main() {
 	}
 }
 
-func getDSN(conf model.DBConf) string {
-	return fmt.Sprintf("%s:%s@http(%s:%d)/%s?parseTime=true",
-		conf.User, conf.Password, conf.Host, &conf.Port, conf.DBName)
+func getDSN(cfg model.DBConf) string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
+		cfg.User, cfg.Password, cfg.Host, cfg.DBPort, cfg.DBName)
 }

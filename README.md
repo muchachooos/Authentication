@@ -40,7 +40,7 @@
 
 ```json
 {
-  "port": 8080,
+  "port": 80,
   "auth_key": "some_key",
   "DataBase": {
     "user": "admin",
@@ -60,7 +60,7 @@
 CREATE TABLE `user`
 (
     `id`       INT AUTO_INCREMENT PRIMARY KEY,
-    `login`    VARCHAR(25) UNIQUE CHECK (`login` != '')      NOT NULL,
+    `login`    VARCHAR(25) UNIQUE CHECK (`login` != '') NOT NULL,
     `hashedPass` VARCHAR(300) UNIQUE CHECK ( `hashedPass` != '') NOT NULL,
     `token`    CHAR(36) UNIQUE,
     `tokenTTL`     DATETIME

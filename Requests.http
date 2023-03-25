@@ -17,5 +17,5 @@ Content-Type: application/json
 }
 
 ### Запрос на проверку по токену
-GET http://localhost:80/check_token?token=bc654a2b-63c3-4c5e-8ed8-0dc6f5e74469
+GET http://localhost:80/check_token?token=c8f57e92-914a-4d62-bb48-241eec6e8d8c
 Authorization: test_key_123

@@ -9,7 +9,7 @@ import (
 type User struct {
 	ID              int       `db:"id" json:"id"`
 	Login           string    `db:"login" json:"login"`
-	HashedPass      string    `db:"hashPass" json:"hashedPass"`
+	HashedPass      string    `db:"hashedPass" json:"hashedPass"`
 	Token           string    `db:"token" json:"token"`
 	TokenTimeToLive time.Time `db:"tokenTTL" json:"tokenTTL"`
 }
@@ -30,7 +30,7 @@ type DBConf struct {
 	Password string `json:"password"`
 	Host     string `json:"host"`
 	DBName   string `json:"dataBaseName"`
-	Port     int    `json:"port"`
+	DBPort   int    `json:"db_port"`
 }
 
 type Err struct {
