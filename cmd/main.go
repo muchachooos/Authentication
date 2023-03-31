@@ -1,32 +1,21 @@
 package main
 
 import (
+	"Authorization/configuration"
 	"Authorization/handler"
 	"Authorization/model"
 	"Authorization/storage"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"os"
 	"strconv"
 )
 
+const configPath = "./configuration.json"
+
 func main() {
-	router := gin.Default()
-
-	configInBytes, err := os.ReadFile("./configuration.json")
-	if err != nil {
-		panic(err)
-	}
-
-	var config model.Config
-
-	err = json.Unmarshal(configInBytes, &config)
-	if err != nil {
-		panic(err)
-	}
+	config := configuration.GetConfig(configPath)
 
 	dataBase, err := sqlx.Open("mysql", getDSN(config.DBConf))
 	if err != nil {
@@ -43,6 +32,8 @@ func main() {
 		},
 		Key: config.Key,
 	}
+
+	router := gin.Default()
 
 	router.POST("/registration", server.RegistrationHandler)
 	router.POST("/authorization", server.AuthorizationHandler)
