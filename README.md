@@ -32,6 +32,7 @@
 *Headers:* Authorization: some_internal_key
 
 Проверка токена
+
 Получение ID и Login пользователя по токену
 
 # Service Configuration
@@ -46,15 +47,15 @@
     "user": "admin",
     "password": "admin",
     "host": "127.0.0.1",
-    "port": 3306,
-    "dataBaseName": "some_DB_name"
+    "dataBaseName": "some_DB_name",
+    "port": 3306
   }
 }
 ```
 
 # Database Schema
 
-Требуемая таблицы
+Требуемая таблица
 
 ```sql
 CREATE TABLE `user`

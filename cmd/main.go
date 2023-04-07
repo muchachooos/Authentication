@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-const configPath = "./configuration.json"
+const configPath = "configuration.json"
 
 func main() {
 	config := configuration.GetConfig(configPath)
