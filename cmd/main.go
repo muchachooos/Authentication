@@ -33,15 +33,15 @@ func main() {
 		Key: config.Key,
 	}
 
-	router := gin.Default()
+	engine := gin.Default()
 
-	router.POST("/registration", server.RegistrationHandler)
-	router.POST("/authorization", server.AuthorizationHandler)
-	router.GET("/check_token", server.CheckTokenHandler)
+	engine.POST("/registration", server.RegistrationHandler)
+	engine.POST("/authorization", server.AuthorizationHandler)
+	engine.GET("/check_token", server.CheckTokenHandler)
 
 	port := ":" + strconv.Itoa(config.Port)
 
-	err = router.Run(port)
+	err = engine.Run(port)
 	if err != nil {
 		panic(err)
 	}
