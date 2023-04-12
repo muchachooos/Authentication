@@ -1,36 +1,41 @@
 # API Documentation
 
-###  Регистрация пользователя
+### Регистрация пользователя
+
 *Метод*: POST  
 *URL*: /registration    
 *Body:*
+
 ```json
 {
-"login": "some_login",
-"password": "some_password"
+  "login": "some_login",
+  "password": "some_password"
 }
 ```
 
 Создание нового пользователя
 
-###  Авторизация пользователя
+### Авторизация пользователя
+
 *Метод*: POST  
 *URL*: /authorization
 *Body:*
+
 ```json
 {
-"login": "some_login",
-"password": "some_password"
+  "login": "some_login",
+  "password": "some_password"
 }
 ```
 
-
 Получение токена при успешной авторизации
+
 ```json
 "91e0df8e-c99e-4115-a7f4-d47324f4f908"
 ```
 
-###  Проверка по токену
+### Проверка по токену
+
 *Метод*: GET  
 *URL*: /check_token?token=some_token    
 *Headers:* Authorization: some_internal_key
@@ -38,6 +43,7 @@
 Проверка токена
 
 Получение ID и Login пользователя при успешной проверки по токену
+
 ```json
 {
   "id": 1,
